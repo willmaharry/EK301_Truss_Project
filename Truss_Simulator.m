@@ -17,3 +17,4 @@ if ~all(sum(C) == 2)
     fprintf("Not all columns add to 2\n")
 end
 
+%will
