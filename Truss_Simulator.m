@@ -79,7 +79,7 @@ L = [   %X external loads  (signs should be positive?)
         0;];
 
 if height(L) ~= 2*height(C)
-    fprintf("L has incorrect dimensinos\n")
+    fprintf("L has incorrect dimensions\n")
 end
 if ~any(L)
     fprintf("Invalid inputs for L\n")
