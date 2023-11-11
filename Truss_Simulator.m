@@ -3,16 +3,21 @@ clc;clear;
 
 %Definition of truss parameters
 
-joints = 5;  %Number of rows of C
-members = 7;  %Number of columns of C
+joints = 8;  %Number of rows of C
+members = 13;  %Number of columns of C
 
 %Connection matrix, members are the columns and joints are the rows (M<J)
 
-C = [1 1 0 0 0 0 0;
-    1 0 1 0 1 1 0;
-    0 1 1 1 0 0 0;
-    0 0 0 1 1 0 1;
-    0 0 0 0 0 1 1];
+C = [
+     1 1 0 0 0 0 0 0 0 0 0 0 0;
+     1 0 1 1 0 0 0 0 0 0 0 0 0;
+     0 0 0 1 1 0 0 1 0 0 0 0 0;
+     0 1 1 0 1 1 1 0 0 0 0 0 0;
+     0 0 0 0 0 0 1 1 1 0 0 1 0;
+     0 0 0 0 0 1 0 0 1 1 1 0 0;
+     0 0 0 0 0 0 0 0 0 0 1 1 1;
+     0 0 0 0 0 0 0 0 0 1 0 0 1;
+    ];
 
 %Check the connection matrix is properly defined (M = 2J-3)
 if width(C) ~= 2*height(C) - 3
@@ -24,11 +29,16 @@ end
 
 %Support force matrices, each should have J rows and 3 columns
 %Which joint has the x reaction force?
-sx =   [1 0 0;
+sx =   [
+        1 0 0;
         0 0 0;
         0 0 0;
         0 0 0;
-        0 0 0;];
+        0 0 0;
+        0 0 0;
+        0 0 0;
+        0 0 0;
+        ];
 
 if height(sx) ~= height(C)
     fprintf("sx has incorrect dimensions\n")
@@ -38,11 +48,16 @@ if ~isequal(sum(sx),[1,0,0])
 end
 
 %Which joints have the y reaction forces?
-sy =   [0 1 0;
+sy =   [
+        0 1 0;
         0 0 0;
         0 0 0;
         0 0 0;
-        0 0 1;];
+        0 0 0;
+        0 0 0;
+        0 0 0;
+        0 0 1;
+        ];
 
 if height(sy) ~= height(C)
     fprintf("sy has incorrect dimensions\n")
@@ -54,12 +69,12 @@ end
 %Location vectors X and Y. 0,0 is defined as the joint where both X and Y
 %reaction forces act
 %x and y are measured in inches
-x = [0,1,2,3,4];
+x = [0 0 4 4 8 8 12 12];
 if width(x) ~= height(C)
    fprintf("x has incorrect dimensions\n")
 end
 
-y = [0,1,0,1,0];
+y = [0 4 8 4 8 4 4 0];
 if width(y) ~= height(C)
    fprintf("y has incorrect dimensions\n")
 end
@@ -71,13 +86,20 @@ L = [   %X external loads  (signs should be positive?)
         0;  
         0;   
         0;   
-        0; 
+        0;
+        0;
+        0;
+        0;
         % Y external loads (signs should be positive?)
         0;   
-        100; % this is an arbitrary 100 unit load at joint 2 in the y   
+        0; % set any value you want to test the max of to 1 (only 1 at a time)   
         0;   
+        1; % y down of 1 unit
         0;
-        0;];
+        0;
+        0;
+        0;
+        ];
 
 if height(L) ~= 2*height(C)
     fprintf("L has incorrect dimensions\n")
@@ -86,69 +108,75 @@ if ~any(L)
     fprintf("Invalid inputs for L\n")
 end
 
-% Okay so basically we need to do the following steps
-% We need to do [A][T] = [L] and we're trying to find [T] 
-% So do a classic T = A^-1(L)
 
-% But what are A, T, & L
-% A is a chongo matrix that consists of 4 segments
-% it has the dimensions: 2j, m+3
-% Top left quadrant: Matrix C mult by the x unit vector at all points
-% Bottom left quadrant: Matrix C mult by the y unit vector at all points
-% Top right quadrant: Support matrix X
-% Bottom right quadrant: Support matrix Y
+% Now lets iterate through and find max load
+maxLoad = 100; % This signifies "units" in compresssion, we ignore tension
+% This maxTests is basically a recursive test suite. So The following code
+% will:
+%  - continutally multiply by 2 until it is too large, then it will set
+%   the first digit to 1. 
+%  - It will then increase by 10% until it reaches the crit. It will set
+%    the second digit to 1. 
+%  - It will then increase by 1% until it reaches the crit. It will then
+%    set the 3rd digit to 1 and be done.
+maxTests = [0, 0, 0];
+maxReached = 0;
+jointLoad = 1;
+newJointLoad = 1;
+prevT = [];
+while ~maxReached
+    if maxTests(1) == 0
+        newJointLoad = jointLoad * 2;
+    elseif maxTests(2) == 0
+        newJointLoad = jointLoad * 1.1;
+    elseif maxTests(3) == 0
+        newJointLoad = jointLoad * 1.01;
+    end
+    T = trussCalculator(C, sx, sy, x, y, loadModifier(L, newJointLoad));
+    if surpassedMaxLoad(T, maxLoad)
+        if maxTests(1) == 0
+            maxTests(1) = 1;
+        elseif maxTests(2) == 0
+            maxTests(2) = 1;
+        elseif maxTests(3) == 0
+            maxTests(3) = 1;
+            maxReached = 1;
+            T = prevT;
+        end
+    else
+        jointLoad = newJointLoad;
+        prevT = T;
+    end
+end
 
-% Okay so to calculate this we will define quadrant 2 & 3 in a loop 
-% (we have 1 & 4)
-% To do this we first clone C to make it quadrant 2
-Csize = size(C);
-A = zeros(height(L),width(C)+3);
-% now loop through and fill out the unit vectors
-for i = 1:Csize(1)
-    for j = 1:Csize(2)
-        if C(i,j) == 1
-            % I gotta find the other connected memeber, gonna do a function
-            % call for this one
-            % So first grab the column and make the current index a zero
-            finderCol = C(:,j);
-            finderCol(i) = 0;
-
-            % then call the function and get the value
-            otherJoint = otherJointFinder(finderCol);
-
-            % Now we have the other member so we can compute the unit vecs
-            % now we need the 2 positions
-            m1pos = [x(i), y(i)];
-            m2pos = [x(otherJoint), y(otherJoint)];
-
-            % And compute the radial distance
-            r = sqrt((m2pos(1)-m1pos(1))^2 + (m2pos(2)-m1pos(2))^2);
-
-            % now write in each value for both the top and bottom matrix
-            % for x
-            A(i,j) = (m2pos(1)-m1pos(1))/r;
-            % for y
-            A(i+size(C,1),j) = (m2pos(2)-m1pos(2))/r;
+% Now print out the results: 
+disp("EK301, Section A6, Group Swashbucklers: Will M., Jake V., Luke M., 11/11/2023")
+for i = 1:height(T)
+    if i < height(T)-2
+        % I flipped tension and compresssion but it's fine cuz I can just
+        % rewrite it here
+        if T(i) < 0
+            disp("Member " + string(i) + ": " + string(-1*T(i)) + " (T)")
+        else
+            disp("Member " + string(i) + ": " + string(T(i)) + " (C)")
+        end
+    else 
+        if i == height(T)-2
+            disp("Sx1: " + string(T(i)))
+        elseif i == height(T)-1
+            disp("Sy1: " + string(T(i)))
+        elseif i == height(T)
+            disp("Sy2: " + string(T(i)))
         end
     end
 end
-A(:,Csize(2)+1:Csize(2)+3) = vertcat(sx, sy);
-disp(A)
-
-% And vultron those mofos
-
-% L is the load on each join
-% it has the dimensions 2j,1
-
-% We already have this so no calculations
 
 
-% T is the tension on each member
-% it has dimensions of m+3,1
 
-% We are solving for this so do it last
-T = A\L;
-disp(T);
+
+
+
+
 
 
 
