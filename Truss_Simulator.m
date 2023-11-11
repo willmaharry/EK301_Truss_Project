@@ -107,12 +107,11 @@ A = zeros(height(L),width(C)+3);
 for i = 1:Csize(1)
     for j = 1:Csize(2)
         if C(i,j) == 1
-            disp(i)
             % I gotta find the other connected memeber, gonna do a function
             % call for this one
             % So first grab the column and make the current index a zero
             finderCol = C(:,j);
-            finderCol(i,j) = 0;
+            finderCol(i) = 0;
 
             % then call the function and get the value
             otherJoint = otherJointFinder(finderCol);
@@ -133,7 +132,8 @@ for i = 1:Csize(1)
         end
     end
 end
-disp(A);
+A(:,Csize(2)+1:Csize(2)+3) = vertcat(sx, sy);
+disp(A)
 
 % And vultron those mofos
 
@@ -147,7 +147,8 @@ disp(A);
 % it has dimensions of m+3,1
 
 % We are solving for this so do it last
-%T = ...
+T = A\L;
+disp(T);
 
 
 
