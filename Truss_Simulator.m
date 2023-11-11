@@ -149,8 +149,21 @@ while ~maxReached
     end
 end
 
+% find what joint the load is on
+loadJoint = 0;
+for i = 1:height(L)
+    if L(i) == 1
+        if i <= height(C)
+            loadJoint = i;
+        else
+            loadJoint = i - height(C);
+        end
+    end
+end
+
 % Now print out the results: 
 disp("EK301, Section A6, Group Swashbucklers: Will M., Jake V., Luke M., 11/11/2023")
+disp("The Max Load at joint " + string(loadJoint) + " : " + string(jointLoad));
 for i = 1:height(T)
     if i < height(T)-2
         % I flipped tension and compresssion but it's fine cuz I can just
