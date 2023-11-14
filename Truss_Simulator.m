@@ -1,4 +1,4 @@
-clc;clear;
+%clc;clear;
 %Preliminary Design Review Code:
 
 %Definition of truss parameters
@@ -66,7 +66,7 @@ if ~isequal(sum(sy),[0,1,1])
     fprintf("Invalid inputs for sy\n")
 end
 
-%Location vectors X and Y. 0,0 is defined as the joint where both X and Y
+%Location vectors X and Y. (0,0) is defined as the joint where both X and Y
 %reaction forces act
 %x and y are measured in inches
 x = [0 0 4 4 8 8 12 12];
@@ -148,14 +148,6 @@ while ~maxReached
         prevT = T;
     end
 end
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> c7c5d86b9c8fb95b261ca1fc290bfa73b077d397
-=======
->>>>>>> c7c5d86b9c8fb95b261ca1fc290bfa73b077d397
 
 % find what joint the load is on
 loadJoint = 0;
@@ -191,66 +183,5 @@ for i = 1:height(T)
         end
     end
 end
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
 
 
-
-
-
-
-
->>>>>>> c7c5d86b9c8fb95b261ca1fc290bfa73b077d397
-
-
-
-
-
-
-
->>>>>>> c7c5d86b9c8fb95b261ca1fc290bfa73b077d397
-
-
-
-
-
-
-
->>>>>>> c7c5d86b9c8fb95b261ca1fc290bfa73b077d397
-
-% find what joint the load is on
-loadJoint = 0;
-for i = 1:height(L)
-    if L(i) == 1
-        if i <= height(C)
-            loadJoint = i;
-        else
-            loadJoint = i - height(C);
-        end
-    end
-end
-
-% Now print out the results: 
-disp("EK301, Section A6, Group Swashbucklers: Will M., Jake V., Luke M., 11/11/2023")
-disp("The Max Load at joint " + string(loadJoint) + " : " + string(jointLoad));
-for i = 1:height(T)
-    if i < height(T)-2
-        % I flipped tension and compresssion but it's fine cuz I can just
-        % rewrite it here
-        if T(i) < 0
-            disp("Member " + string(i) + ": " + string(-1*T(i)) + " (T)")
-        else
-            disp("Member " + string(i) + ": " + string(T(i)) + " (C)")
-        end
-    else 
-        if i == height(T)-2
-            disp("Sx1: " + string(T(i)))
-        elseif i == height(T)-1
-            disp("Sy1: " + string(T(i)))
-        elseif i == height(T)
-            disp("Sy2: " + string(T(i)))
-        end
-    end
-end
