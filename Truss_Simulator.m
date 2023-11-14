@@ -150,7 +150,10 @@ while ~maxReached
 end
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> c7c5d86b9c8fb95b261ca1fc290bfa73b077d397
 =======
 >>>>>>> c7c5d86b9c8fb95b261ca1fc290bfa73b077d397
 
@@ -189,7 +192,17 @@ for i = 1:height(T)
     end
 end
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+
+
+
+
+
+
+
+>>>>>>> c7c5d86b9c8fb95b261ca1fc290bfa73b077d397
 
 
 
