@@ -94,7 +94,7 @@ L = [   %X external loads  (signs should be positive?)
         0;   
         0; % set any value you want to test the max of to 1 (only 1 at a time)   
         0;   
-        1; % y down of 1 unit
+        -1; % y down of 1 unit
         0;
         0;
         0;
@@ -108,7 +108,6 @@ if ~any(L)
     fprintf("Invalid inputs for L\n")
 end
 
-
 % Now lets iterate through and find max load
 maxLoad = 100; % This signifies "units" in compresssion, we ignore tension
 % This maxTests is basically a recursive test suite. So The following code
@@ -121,8 +120,8 @@ maxLoad = 100; % This signifies "units" in compresssion, we ignore tension
 %    set the 3rd digit to 1 and be done.
 maxTests = [0, 0, 0];
 maxReached = 0;
-jointLoad = 1;
-newJointLoad = 1;
+jointLoad = -1;
+newJointLoad = -1;
 prevT = [];
 while ~maxReached
     if maxTests(1) == 0
@@ -169,9 +168,9 @@ for i = 1:height(T)
         % I flipped tension and compresssion but it's fine cuz I can just
         % rewrite it here
         if T(i) < 0
-            disp("Member " + string(i) + ": " + string(-1*T(i)) + " (T)")
+            disp("Member " + string(i) + ": " + string(-1*T(i)) + " (C)")
         else
-            disp("Member " + string(i) + ": " + string(T(i)) + " (C)")
+            disp("Member " + string(i) + ": " + string(T(i)) + " (T)")
         end
     else 
         if i == height(T)-2
