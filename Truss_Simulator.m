@@ -1,4 +1,4 @@
-clc;clear;
+%clc;clear;
 %Preliminary Design Review Code:
 
 %Definition of truss parameters
@@ -66,7 +66,7 @@ if ~isequal(sum(sy),[0,1,1])
     fprintf("Invalid inputs for sy\n")
 end
 
-%Location vectors X and Y. 0,0 is defined as the joint where both X and Y
+%Location vectors X and Y. (0,0) is defined as the joint where both X and Y
 %reaction forces act
 %x and y are measured in inches
 x = [0 0 4 4 8 8 12 12];
@@ -182,13 +182,5 @@ for i = 1:height(T)
         end
     end
 end
-
-
-
-
-
-
-
-
 
 
