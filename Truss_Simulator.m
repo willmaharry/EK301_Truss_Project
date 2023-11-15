@@ -1,8 +1,10 @@
-%clc;clear;
+
 %Preliminary Design Review Code:
+clc;clear;
+load("PracticeProblemInput.mat");
 
 %Definition of truss parameters
-
+%{
 joints = 8;  %Number of rows of C
 members = 13;  %Number of columns of C
 
@@ -92,9 +94,9 @@ L = [   %X external loads  (signs should be positive?)
         0;
         % Y external loads (signs should be positive?)
         0;   
-        0; % set any value you want to test the max of to 1 (only 1 at a time)   
+        0;  
         0;   
-        -1; % y down of 1 unit
+        25; % y down of 1 unit
         0;
         0;
         0;
@@ -108,6 +110,53 @@ if ~any(L)
     fprintf("Invalid inputs for L\n")
 end
 
+%}
+
+%First, lets just analyze the truss and display the results
+T = trussCalculator(C, Sx, Sy, X, Y, L);
+
+%Calculate the cost of the truss: I'll just make another function
+cost = calculateCost(C,X,Y);
+
+% find what joint the load is on
+loadJoint = 0;
+for i = 1:height(L)
+    if L(i) ~= 0
+        if i <= height(C)
+            loadJoint = i;
+        else
+            loadJoint = i - height(C);
+        end
+    end
+end
+
+% Now print out the results: 
+disp("EK301, Section A6, Group Swashbucklers: Will M., Jake V., Luke M., 11/11/2023")
+disp(string(sum(L)) + " oz. load applied at joint " + string(loadJoint));
+for i = 1:height(T)
+    if i < height(T)-2
+        % I flipped tension and compresssion but it's fine cuz I can just
+        % rewrite it here
+        if T(i) < 0
+            disp("Member " + string(i) + ": " + string(-1*T(i)) + " oz. (C)")
+        else
+            disp("Member " + string(i) + ": " + string(T(i)) + " oz. (T)")
+        end
+    else 
+        if i == height(T)-2
+            disp("Sx1: " + string(T(i)) + " oz.")
+        elseif i == height(T)-1
+            disp("Sy1: " + string(T(i)) + " oz.")
+        elseif i == height(T)
+            disp("Sy2: " + string(T(i)) + " oz.")
+        end
+    end
+end
+disp("Cost of truss: $" + string(cost))
+
+%Now we need to figure out what the maximum load is.
+%Assume that there's only ever one force acting on the truss
+
 % Now lets iterate through and find max load
 maxLoad = 100; % This signifies "units" in compresssion, we ignore tension
 % This maxTests is basically a recursive test suite. So The following code
@@ -118,6 +167,7 @@ maxLoad = 100; % This signifies "units" in compresssion, we ignore tension
 %    the second digit to 1. 
 %  - It will then increase by 1% until it reaches the crit. It will then
 %    set the 3rd digit to 1 and be done.
+
 maxTests = [0, 0, 0];
 maxReached = 0;
 jointLoad = -1;
@@ -131,7 +181,7 @@ while ~maxReached
     elseif maxTests(3) == 0
         newJointLoad = jointLoad * 1.01;
     end
-    T = trussCalculator(C, sx, sy, x, y, loadModifier(L, newJointLoad));
+    T = trussCalculator(C, Sx, Sy, X, Y, loadModifier(L, newJointLoad));
     if surpassedMaxLoad(T, maxLoad)
         if maxTests(1) == 0
             maxTests(1) = 1;
@@ -148,39 +198,10 @@ while ~maxReached
     end
 end
 
-% find what joint the load is on
-loadJoint = 0;
-for i = 1:height(L)
-    if L(i) == 1
-        if i <= height(C)
-            loadJoint = i;
-        else
-            loadJoint = i - height(C);
-        end
-    end
-end
+%Calculate the max load/cost ratio
+maxLoadToCostRatio = abs(jointLoad)/cost;
 
 % Now print out the results: 
-disp("EK301, Section A6, Group Swashbucklers: Will M., Jake V., Luke M., 11/11/2023")
 disp("The Max Load at joint " + string(loadJoint) + " : " + string(jointLoad));
-for i = 1:height(T)
-    if i < height(T)-2
-        % I flipped tension and compresssion but it's fine cuz I can just
-        % rewrite it here
-        if T(i) < 0
-            disp("Member " + string(i) + ": " + string(-1*T(i)) + " (C)")
-        else
-            disp("Member " + string(i) + ": " + string(T(i)) + " (T)")
-        end
-    else 
-        if i == height(T)-2
-            disp("Sx1: " + string(T(i)))
-        elseif i == height(T)-1
-            disp("Sy1: " + string(T(i)))
-        elseif i == height(T)
-            disp("Sy2: " + string(T(i)))
-        end
-    end
-end
-
+disp("TheoRHETTical max load/cost ratio in oz/$: " + maxLoadToCostRatio)
 

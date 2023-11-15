@@ -1,4 +1,4 @@
-function T = trussCalculator(C, sx, sy, x, y, L)
+function T = trussCalculator(C, Sx, Sy, X, Y, L)
     % Okay so basically we need to do the following steps
     % We need to do [A][T] = [L] and we're trying to find [T] 
     % So do a classic T = A^-1(L)
@@ -31,8 +31,8 @@ function T = trussCalculator(C, sx, sy, x, y, L)
     
                 % Now we have the other member so we can compute the unit vecs
                 % now we need the 2 positions
-                m1pos = [x(i), y(i)];
-                m2pos = [x(otherJoint), y(otherJoint)];
+                m1pos = [X(i), Y(i)];
+                m2pos = [X(otherJoint), Y(otherJoint)];
     
                 % And compute the radial distance
                 r = sqrt((m2pos(1)-m1pos(1))^2 + (m2pos(2)-m1pos(2))^2);
@@ -45,7 +45,7 @@ function T = trussCalculator(C, sx, sy, x, y, L)
             end
         end
     end
-    A(:,Csize(2)+1:Csize(2)+3) = vertcat(sx, sy);
+    A(:,Csize(2)+1:Csize(2)+3) = vertcat(Sx, Sy);
     
     % And vultron those mofos
     
