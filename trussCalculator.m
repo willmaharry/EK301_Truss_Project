@@ -16,6 +16,7 @@ function T = trussCalculator(C, Sx, Sy, X, Y, L)
     % To do this we first clone C to make it quadrant 2
     Csize = size(C);
     A = zeros(height(L),width(C)+3);
+
     % now loop through and fill out the unit vectors
     for i = 1:Csize(1)
         for j = 1:Csize(2)

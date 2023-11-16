@@ -1,9 +1,9 @@
-function surpassed = surpassedMaxLoad(L, maxLoad)
+function surpassed = surpassedMaxLoad(L, memberMaxLoads)
     surpassed = 0;
     for i = 1:height(L)-3 % So we don't accidentally calculate the S forces
-        if L(i) > maxLoad
+        % Calculate Max load for member i
+        if (L(i) > memberMaxLoads(i))
             surpassed = 1;
-            break;
         end
     end    
 end

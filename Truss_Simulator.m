@@ -24,6 +24,7 @@ end
 
 % Now print out the results: 
 disp("EK301, Section A6, Group Swashbucklers: Will M., Jake V., Luke M., 11/11/2023")
+disp("--- Normal Sumulating Section ---")
 disp(string(sum(L)) + " oz. load applied at joint " + string(loadJoint));
 for i = 1:height(T)
     if i < height(T)-2
@@ -46,11 +47,11 @@ for i = 1:height(T)
 end
 disp("Cost of truss: $" + string(cost))
 
+disp("--- Maximizing Section ---");
 %Now we need to figure out what the maximum load is.
 %Assume that there's only ever one force acting on the truss
 
 % Now lets iterate through and find max load
-maxLoad = 100; % This signifies "units" in compresssion, we ignore tension
 % This maxTests is basically a recursive test suite. So The following code
 % will:
 %  - continutally multiply by 2 until it is too large, then it will set
@@ -59,7 +60,7 @@ maxLoad = 100; % This signifies "units" in compresssion, we ignore tension
 %    the second digit to 1. 
 %  - It will then increase by 1% until it reaches the crit. It will then
 %    set the 3rd digit to 1 and be done.
-
+memberMaxLoads = memberMaxLoadFinder(C, X, Y);
 maxTests = [0, 0, 0];
 maxReached = 0;
 jointLoad = 1;
@@ -74,7 +75,7 @@ while ~maxReached
         newJointLoad = jointLoad * 1.01;
     end
     Tmax = trussCalculator(C, Sx, Sy, X, Y, loadModifier(L, newJointLoad));
-    if surpassedMaxLoad(Tmax, maxLoad)
+    if surpassedMaxLoad(Tmax, memberMaxLoads)
         if maxTests(1) == 0
             maxTests(1) = 1;
         elseif maxTests(2) == 0
@@ -107,7 +108,7 @@ for i = 1:width(C)
     indices = find(C(:,i))';
     A(indices(1),indices(2)) = 1;
 end
-gplot(A,XYCoords)
-title("Da Truss")
-xlim([-2,35])
-ylim([-9,28])
+% gplot(A,XYCoords)
+% title("Da Truss")
+% xlim([-2,35])
+% ylim([-9,28])
