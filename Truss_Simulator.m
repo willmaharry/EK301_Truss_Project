@@ -100,3 +100,14 @@ disp("TheoRHETTical max load/cost ratio in oz/$: " + maxLoadToCostRatio)
 %What member will fail first?
 disp("Member " + string(find(Tmax==max(Tmax))) + " will buckle first.")
 
+%Duddde what if we could plot the truss?! We need an adjacency matrix
+XYCoords = [X;Y]';
+A = zeros(height(C));
+for i = 1:width(C)
+    indices = find(C(:,i))';
+    A(indices(1),indices(2)) = 1;
+end
+gplot(A,XYCoords)
+title("Da Truss")
+xlim([-2,35])
+ylim([-9,28])
