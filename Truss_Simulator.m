@@ -96,3 +96,7 @@ maxLoadToCostRatio = abs(jointLoad)/cost;
 % Now print out the results: 
 disp("The Max Load at joint " + string(loadJoint) + " : " + string(jointLoad) + "oz.");
 disp("TheoRHETTical max load/cost ratio in oz/$: " + maxLoadToCostRatio)
+
+%What member will fail first?
+disp("Member " + string(find(Tmax==max(Tmax))) + " will buckle first.")
+

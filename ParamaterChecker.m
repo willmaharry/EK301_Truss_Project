@@ -12,11 +12,11 @@ end
 
 C = [
      1 1 0 0 0 0 0 0 0 0 0;
-     0 1 1 1 0 0 0 0 0 0 0;
-     1 0 1 0 1 1 0 0 0 0 0;
+     1 0 1 1 0 0 0 0 0 0 0;
+     0 1 1 0 1 1 0 0 0 0 0;
      0 0 0 1 1 0 1 1 0 0 0;
-     0 0 0 0 0 1 1 0 1 0 1;
-     0 0 0 0 0 0 0 1 1 1 0;
+     0 0 0 0 0 1 1 0 1 1 0;
+     0 0 0 0 0 0 0 1 1 0 1;
      0 0 0 0 0 0 0 0 0 1 1;
     ];
 
@@ -68,12 +68,12 @@ end
 %Location vectors X and Y. (0,0) is defined as the joint where both X and Y
 %reaction forces act
 %x and y are measured in inches
-X = [0 8.25 11 16.5 22 24.75 33];
+X = [0 5.5 11 16.5 22 27.5 33];
 if width(X) ~= height(C)
    fprintf("x has incorrect dimensions\n")
 end
 
-Y = [0 7.5125 0 15.025 0 7.5125 0];
+Y = [0 6 0 6 0 6 0];
 if width(Y) ~= height(C)
    fprintf("y has incorrect dimensions\n")
 end
@@ -127,4 +127,4 @@ for j = 1:width(C)
     fprintf("Member " + string(j) + ": " + string(lengths(j)) + " in. \n")
 end
 
-save Truss02.mat
+save Truss03.mat
