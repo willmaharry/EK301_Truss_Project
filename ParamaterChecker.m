@@ -68,12 +68,12 @@ end
 %Location vectors X and Y. (0,0) is defined as the joint where both X and Y
 %reaction forces act
 %x and y are measured in inches
-X = [0 8.8 11 16.5 22 24.2 33];
+X = [0 8.25 11 16.5 22 24.75 33];
 if width(X) ~= height(C)
    fprintf("x has incorrect dimensions\n")
 end
 
-Y = [0 4.4 0 8.8 0 4.4 0];
+Y = [0 7.5125 0 15.025 0 7.5125 0];
 if width(Y) ~= height(C)
    fprintf("y has incorrect dimensions\n")
 end
@@ -98,4 +98,33 @@ L = [   %X external loads  (signs should be positive?)
         0;
         ];
 
-save Truss01.mat
+%Lets also check how long each member is!
+fprintf("Member lengths:\n")
+lengths = zeros(1,width(C));
+for i = 1:height(C)
+        for j = 1:width(C)
+            if C(i,j) == 1
+                % I gotta find the other connected memeber, gonna do a function
+                % call for this one
+                % So first grab the column and make the current index a zero
+                finderCol = C(:,j);
+                finderCol(i) = 0;
+    
+                % then call the function and get the value
+                otherJoint = otherJointFinder(finderCol);
+                m1pos = [X(i), Y(i)];
+                m2pos = [X(otherJoint), Y(otherJoint)];
+    
+                % And compute the length of the member
+                length = sqrt((m2pos(1)-m1pos(1))^2 + (m2pos(2)-m1pos(2))^2);
+                lengths(j) = length;
+            end
+        end
+    end
+
+%Print the length
+for j = 1:width(C)
+    fprintf("Member " + string(j) + ": " + string(lengths(j)) + " in. \n")
+end
+
+save Truss02.mat

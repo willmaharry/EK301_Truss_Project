@@ -1,7 +1,7 @@
 
 %Preliminary Design Review Code:
 clc;clear;
-load("Truss01.mat");
+load("Truss02.mat");
 
 %First, lets just analyze the truss and display the results
 T = trussCalculator(C, Sx, Sy, X, Y, L);

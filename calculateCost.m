@@ -1,4 +1,4 @@
-function cost = calculateCost(C,x,y)
+function cost = calculateCost(C,X,Y)
     jointCost = 10*height(C);
     memberCost = 0;
     for i = 1:height(C)
@@ -12,8 +12,8 @@ function cost = calculateCost(C,x,y)
     
                 % then call the function and get the value
                 otherJoint = otherJointFinder(finderCol);
-                m1pos = [x(i), y(i)];
-                m2pos = [x(otherJoint), y(otherJoint)];
+                m1pos = [X(i), Y(i)];
+                m2pos = [X(otherJoint), Y(otherJoint)];
     
                 % And compute the length of the member
                 length = sqrt((m2pos(1)-m1pos(1))^2 + (m2pos(2)-m1pos(2))^2);
