@@ -1,7 +1,7 @@
 
 %Preliminary Design Review Code:
 clc;clear;
-load("PracticeProblemInput.mat");
+load("Truss01.mat");
 
 %First, lets just analyze the truss and display the results
 T = trussCalculator(C, Sx, Sy, X, Y, L);
@@ -94,5 +94,5 @@ end
 maxLoadToCostRatio = abs(jointLoad)/cost;
 
 % Now print out the results: 
-disp("The Max Load at joint " + string(loadJoint) + " : " + string(jointLoad));
+disp("The Max Load at joint " + string(loadJoint) + " : " + string(jointLoad) + "oz.");
 disp("TheoRHETTical max load/cost ratio in oz/$: " + maxLoadToCostRatio)
