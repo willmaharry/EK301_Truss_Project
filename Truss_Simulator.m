@@ -1,7 +1,7 @@
 
 %Preliminary Design Review Code:
 clc;clear;
-load("Truss04.mat");
+load("Truss01.mat");
 
 %First, lets just analyze the truss and display the results
 T = trussCalculator(C, Sx, Sy, X, Y, L);
@@ -49,48 +49,33 @@ disp("Cost of truss: $" + string(round(cost,2)))
 
 disp("--- Maximizing Section ---");
 %Now we need to figure out what the maximum load is.
-%Assume that there's only ever one force acting on the truss
+%We can do this using linearity -- The ratios between the internal forces
+%in each member will stay the same as the load increases. Thus, we can find
+%the load at which each member will fail, and then check if that member is
+%the only one to fail under that load.
 
-% Now lets iterate through and find max load
-% This maxTests is basically a recursive test suite. So The following code
-% will:
-%  - continutally multiply by 2 until it is too large, then it will set
-%   the first digit to 1. 
-%  - It will then increase by 10% until it reaches the crit. It will set
-%    the second digit to 1. 
-%  - It will then increase by 1% until it reaches the crit. It will then
-%    set the 3rd digit to 1 and be done.
+%First we need the max loads each member is capable of supporting
 memberMaxLoads = memberMaxLoadFinder(C, X, Y);
-maxTests = [0, 0, 0];
-maxReached = 0;
-jointLoad = 1;
-newJointLoad = 1;
-prevTmax = [];
-while ~maxReached
-    if maxTests(1) == 0
-        newJointLoad = jointLoad * 2;
-    elseif maxTests(2) == 0
-        newJointLoad = jointLoad * 1.1;
-    elseif maxTests(3) == 0
-        newJointLoad = jointLoad * 1.01;
-    end
-    Tmax = trussCalculator(C, Sx, Sy, X, Y, loadModifier(L, newJointLoad));
-    if surpassedMaxLoad(Tmax, memberMaxLoads)
-        if maxTests(1) == 0
-            maxTests(1) = 1;
-        elseif maxTests(2) == 0
-            maxTests(2) = 1;
-        elseif maxTests(3) == 0
-            maxTests(3) = 1;
-            maxReached = 1;
-            Tmax = prevTmax;
+members = width(C);
+%We can ignore the support forces
+memberForces = T(1:members,:)';
+%The multiplier vector contains a multiplier for exactly how much each
+%element must be multiplied for it to reach buckling strength
+multipliers = memberMaxLoads./ memberForces;
+for i = 1:members
+    %We can ignore members under tension
+    if memberForces(i) > 0
+        differences = memberForces*multipliers(i)-memberMaxLoads;
+        %If the differences vector is all negatives, then whichever the ith
+        %member will fail first
+        if all(differences <= 0)
+            Tmax = memberForces.* multipliers(i);
+            jointLoad = sum(L)*multipliers(i);
+            failingMemberIndex = i;
         end
-    else
-        jointLoad = newJointLoad;
-        prevTmax = Tmax;
     end
 end
-
+    
 %Calculate the max load/cost ratio
 maxLoadToCostRatio = abs(jointLoad)/cost;
 
@@ -99,8 +84,8 @@ disp("The Max Load at joint " + string(loadJoint) + " : " + string(jointLoad) + 
 disp("TheoRHETTical max load/cost ratio in oz/$: " + maxLoadToCostRatio)
 
 %What member will fail first?
-disp("Member " + string(find(Tmax==max(Tmax))) + " will buckle first.")
-disp("Buckling Strength of member " + string(find(Tmax==max(Tmax))) + ": " + string(round(max(Tmax),3)) + " oz.")
+disp("Member " + string(failingMemberIndex) + " will buckle first.")
+disp("Buckling Strength of member " + string(failingMemberIndex) + ": " + string(round((Tmax(failingMemberIndex)),3)) + " oz.")
 
 %Duddde what if we could plot the truss?! We need an adjacency matrix
 XYCoords = [X;Y]';
