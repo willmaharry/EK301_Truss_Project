@@ -1,7 +1,7 @@
 
 %Preliminary Design Review Code:
 clc;clear;
-load("Truss02.mat");
+load("Truss04.mat");
 
 %First, lets just analyze the truss and display the results
 T = trussCalculator(C, Sx, Sy, X, Y, L);
@@ -108,7 +108,7 @@ for i = 1:width(C)
     indices = find(C(:,i))';
     A(indices(1),indices(2)) = 1;
 end
-% gplot(A,XYCoords)
-% title("Da Truss")
-% xlim([-2,35])
-% ylim([-9,28])
+gplot(A,XYCoords)
+title("Da Truss")
+xlim([-2,35])
+ylim([-9,28])
