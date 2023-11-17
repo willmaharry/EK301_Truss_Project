@@ -24,7 +24,7 @@ end
 
 % Now print out the results: 
 disp("EK301, Section A6, Group Swashbucklers: Will M., Jake V., Luke M., 11/11/2023")
-disp("--- Normal Sumulating Section ---")
+disp("--- Normal Simulating Section ---")
 disp(string(sum(L)) + " oz. load applied at joint " + string(loadJoint));
 for i = 1:height(T)
     if i < height(T)-2
@@ -45,7 +45,7 @@ for i = 1:height(T)
         end
     end
 end
-disp("Cost of truss: $" + string(cost))
+disp("Cost of truss: $" + string(round(cost,2)))
 
 disp("--- Maximizing Section ---");
 %Now we need to figure out what the maximum load is.
@@ -100,6 +100,7 @@ disp("TheoRHETTical max load/cost ratio in oz/$: " + maxLoadToCostRatio)
 
 %What member will fail first?
 disp("Member " + string(find(Tmax==max(Tmax))) + " will buckle first.")
+disp("Buckling Strength of member " + string(find(Tmax==max(Tmax))) + ": " + string(round(max(Tmax),3)) + " oz.")
 
 %Duddde what if we could plot the truss?! We need an adjacency matrix
 XYCoords = [X;Y]';
