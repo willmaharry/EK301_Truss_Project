@@ -74,7 +74,7 @@ end
 %Location vectors X and Y. (0,0) is defined as the joint where both X and Y
 %reaction forces act
 %x and y are measured in inches
-X = [0 4 8 12 16 20 24 28 32];
+X = [0 4 8 12 16 20 24 28 33];
 if width(X) ~= height(C)
    fprintf("x has incorrect dimensions\n")
 end
@@ -101,9 +101,9 @@ L = [   %X external loads  (signs should be positive?)
         0;  
         0;   
         0; % y down of 1 unit
+        0;
+        0;
         25;
-        0;
-        0;
         0;
         0;
         ];
