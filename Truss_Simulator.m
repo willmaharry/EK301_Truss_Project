@@ -1,7 +1,6 @@
-
 %Preliminary Design Review Code:
 clc;clear;
-load("Truss01.mat");
+load("Truss05.mat");
 
 %First, lets just analyze the truss and display the results
 T = trussCalculator(C, Sx, Sy, X, Y, L);
@@ -84,7 +83,7 @@ percentageChange = 1-Tmax(failingMemberIndex) / (Tmax(failingMemberIndex)+1.685)
 loadUncertainty = round(sum(L)*percentageChange,3);
 
 % Now print out the results: 
-disp("The Max Load at joint " + string(loadJoint) + " : " + string(jointLoad) + " ± " + string(loadUncertainty) + "oz.");
+disp("The Max Load at joint " + string(loadJoint) + ": " + string(round(jointLoad,3)) + " ± " + string(loadUncertainty) + "oz.");
 disp("TheoRHETTical max load/cost ratio in oz/$: " + maxLoadToCostRatio)
 
 %What member will fail first?
@@ -98,7 +97,7 @@ for i = 1:width(C)
     indices = find(C(:,i))';
     A(indices(1),indices(2)) = 1;
 end
-%gplot(A,XYCoords)
-%title("Da Truss")
-%xlim([-2,35])
-%ylim([-9,28])
+gplot(A,XYCoords)
+title("Da Truss")
+xlim([-2,35])
+ylim([-9,28])
