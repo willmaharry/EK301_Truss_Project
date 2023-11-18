@@ -59,7 +59,7 @@ memberMaxLoads = memberMaxLoadFinder(C, X, Y);
 members = width(C);
 %We can ignore the support forces
 memberForces = T(1:members,:)';
-%The multiplier vector contains a multiplier for exactly how much each
+%The multiplier vector contains exactly how much each
 %element must be multiplied for it to reach buckling strength
 multipliers = memberMaxLoads./ memberForces;
 for i = 1:members
@@ -75,17 +75,21 @@ for i = 1:members
         end
     end
 end
-    
+
 %Calculate the max load/cost ratio
 maxLoadToCostRatio = abs(jointLoad)/cost;
 
+%What about the uncertainty??
+percentageChange = 1-Tmax(failingMemberIndex) / (Tmax(failingMemberIndex)+1.685);
+loadUncertainty = round(sum(L)*percentageChange,3);
+
 % Now print out the results: 
-disp("The Max Load at joint " + string(loadJoint) + " : " + string(jointLoad) + "oz.");
+disp("The Max Load at joint " + string(loadJoint) + " : " + string(jointLoad) + " ± " + string(loadUncertainty) + "oz.");
 disp("TheoRHETTical max load/cost ratio in oz/$: " + maxLoadToCostRatio)
 
 %What member will fail first?
 disp("Member " + string(failingMemberIndex) + " will buckle first.")
-disp("Buckling Strength of member " + string(failingMemberIndex) + ": " + string(round((Tmax(failingMemberIndex)),3)) + " oz.")
+disp("Buckling Strength of member " + string(failingMemberIndex) + ": " + string(round((Tmax(failingMemberIndex)),3)) + " ± 1.685 oz.")
 
 %Duddde what if we could plot the truss?! We need an adjacency matrix
 XYCoords = [X;Y]';
@@ -94,7 +98,7 @@ for i = 1:width(C)
     indices = find(C(:,i))';
     A(indices(1),indices(2)) = 1;
 end
-gplot(A,XYCoords)
-title("Da Truss")
-xlim([-2,35])
-ylim([-9,28])
+%gplot(A,XYCoords)
+%title("Da Truss")
+%xlim([-2,35])
+%ylim([-9,28])
