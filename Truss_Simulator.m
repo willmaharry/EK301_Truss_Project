@@ -1,6 +1,7 @@
 %Preliminary Design Review Code:
 clc;clear;
-load("WarrenTruss(1).mat");
+load("WarrenTruss(SUBMITTED)" + ...
+    ".mat");
 
 %First, lets just analyze the truss and display the results
 T = trussCalculator(C, Sx, Sy, X, Y, L);
@@ -54,33 +55,22 @@ disp("--- Maximizing Section ---");
 %the only one to fail under that load.
 
 %First we need the max loads each member is capable of supporting
-memberMaxLoads = memberMaxLoadFinder(C, X, Y);
-members = width(C);
-%We can ignore the support forces
-memberForces = T(1:members,:)';
-%The multiplier vector contains exactly how much each
-%element must be multiplied for it to reach buckling strength
-multipliers = memberMaxLoads./ memberForces;
-for i = 1:members
-    %We can ignore members under tension
-    if memberForces(i) > 0
-        differences = memberForces*multipliers(i)-memberMaxLoads;
-        %If the differences vector is all negatives, then whichever the ith
-        %member will fail first
-        if all(differences <= 0)
-            Tmax = memberForces.* multipliers(i);
-            jointLoad = sum(L)*multipliers(i);
-            failingMemberIndex = i;
-        end
-    end
-end
+memberMaxLoads = memberMaxLoadFinder(C, X, Y, 0);
+
+%Now, call a function to do the maximizing, uses linearity.
+[Tmax, failingMemberIndex, jointLoad] = Maximizer(memberMaxLoads,T,L);
 
 %Calculate the max load/cost ratio
 maxLoadToCostRatio = abs(jointLoad)/cost;
 
-%What about the uncertainty??
-percentageChange = 1-Tmax(failingMemberIndex) / (Tmax(failingMemberIndex)+1.685);
-loadUncertainty = round(sum(L)*percentageChange,3);
+%What about the uncertainty?? we need to calculate the case where all the
+%members are stronger than expected
+initialUncertainty = 1.685;
+strongMemberMaxLoads = memberMaxLoadFinder(C, X, Y, initialUncertainty);
+[~,~,jointLoadStrong] = Maximizer(strongMemberMaxLoads,T,L);
+
+%Now find the percentage change, and use this to find the uncertainty
+loadUncertainty = jointLoadStrong - jointLoad;
 
 % Now print out the results: 
 disp("The Max Load at joint " + string(loadJoint) + ": " + string(round(jointLoad,3)) + " ± " + string(loadUncertainty) + "oz.");

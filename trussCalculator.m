@@ -61,4 +61,9 @@ function T = trussCalculator(C, Sx, Sy, X, Y, L)
     
     % We are solving for this so do it last
     T = A\L;
+    %Cursed fix just to test if we flipped tension and compression
+    T = T.* -1;
+    %FROM NOW ON:
+    %Tension is NEGATIVE
+    %Compression is POSITIVE
 end

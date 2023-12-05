@@ -1,4 +1,4 @@
-function memberMaxLoads = memberMaxLoadFinder(C, X, Y)
+function memberMaxLoads = memberMaxLoadFinder(C, X, Y, uncertainty)
     % We also want to calculate the length of each member to use it in the
     % strength calculations
     memberLengths = zeros(1,width(C));
@@ -28,7 +28,7 @@ function memberMaxLoads = memberMaxLoadFinder(C, X, Y)
     % and find the max loads
     memberMaxLoads = zeros(1, width(C));
     for i = 1:width(C)
-        memberMaxLoads(i) = 3654.553 * (memberLengths(i)^-2.119);
+        memberMaxLoads(i) = (3654.553 * (memberLengths(i)^-2.119) + uncertainty);
     end
 end
 
